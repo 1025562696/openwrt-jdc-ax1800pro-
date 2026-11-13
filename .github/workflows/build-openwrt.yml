@@ -170,11 +170,8 @@ jobs:
         echo "- 设备: JDCloud RE-SS-01 (AX1800 Pro)" >> release.txt
         echo "- 编译时间: $(date +"%Y-%m-%d %H:%M")" >> release.txt
         echo "" >> release.txt
-        echo "### 已包含插件" >> release.txt
-        echo "- PassWall (科学上网)" >> release.txt
-        echo "- udpxy (IPTV组播转单播)" >> release.txt
-        echo "- Lucky 大吉 (DDNS/端口转发)" >> release.txt
-        echo "- FM350-GL 5G 模块支持" >> release.txt
+        echo "### 固件说明" >> release.txt
+        echo "- 纯净版官方源固件，未集成额外的第三方插件" >> release.txt
         echo "" >> release.txt
         echo "### 默认设置" >> release.txt
         echo "- IP: 192.168.1.1" >> release.txt
