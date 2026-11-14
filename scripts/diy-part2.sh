@@ -1,40 +1,36 @@
 #!/bin/bash
-# DIY Part 2: Execute befor make menuconfig
+# DIY Part 2: Execute before make menuconfig
 
 echo "DIY Part 2: Custom settings"
 
 # Modify default IP
 echo "Setting default IP to 192.168.1.1..."
-sed -i 's/192.168.1.1/192.168.1.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.1.1/g' \
+  package/base-files/files/bin/config_generate
 
 # Modify default hostname
 echo "Setting hostname to JDCloud..."
-sed -i 's/ImmortalWrt/JDCloud/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/JDCloud/g' \
+  package/base-files/files/bin/config_generate
 
 # Modify default timezone
 echo "Setting timezone to Asia/Shanghai..."
-sed -i "s/'UTC'/'CST-8'/g" package/base-files/files/bin/config_generate
-sed -i "s/UTC/Asia\/Shanghai/g" package/base-files/files/bin/config_generate
+
+CONFIG_GENERATE="package/base-files/files/bin/config_generate"
+
+# 不要使用 CST-8。
+# CST-8 是 POSIX 时区写法，但会被部分 LuCI JavaScript 页面当成浏览器时区，
+# 从而触发：RangeError: Invalid time zone specified: CST-8
+sed -i "s/'UTC'/'Asia\\/Shanghai'/g" "$CONFIG_GENERATE"
 
 # Modify default theme
 echo "Setting default theme to Argon..."
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile 2>/dev/null || true
+sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' \
+  feeds/luci/collections/luci/Makefile 2>/dev/null || true
 
-# Clear root password (ensure empty password)
+# Clear root password
 echo "Clearing root password..."
-sed -i 's/root:.*/root:::0:99999:7:::/g' package/base-files/files/etc/shadow
-
-# Fix fail2ban build error (Cannot import setuptools.build_meta)
-# Ensure host python dependencies are available
-echo "Fixing fail2ban build dependencies..."
-if [ -f feeds/packages/net/fail2ban/Makefile ]; then
-    # Add host python dependencies
-    if grep -q "PKG_BUILD_DEPENDS" feeds/packages/net/fail2ban/Makefile; then
-        sed -i 's/PKG_BUILD_DEPENDS:=/PKG_BUILD_DEPENDS:=python3\/host python-setuptools\/host python-wheel\/host /' feeds/packages/net/fail2ban/Makefile
-    else
-        sed -i '/include $(TOPDIR)\/rules.mk/a PKG_BUILD_DEPENDS:=python3/host python-setuptools/host python-wheel/host' feeds/packages/net/fail2ban/Makefile
-    fi
-    # Force use of pip install instead of setup.py if needed, or ensure build backend is present
-fi
+sed -i 's/root:.*/root:::0:99999:7:::/g' \
+  package/base-files/files/etc/shadow
 
 echo "DIY Part 2: Done"
